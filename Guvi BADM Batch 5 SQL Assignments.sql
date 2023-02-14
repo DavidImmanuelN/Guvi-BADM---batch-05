@@ -80,7 +80,8 @@ Select * from Projects
 # Requirements
 
 #1 
-Select * from Clients Where Business='Consultant'
+Select * from Clients 
+Where Business='Consultant'
 
 #2 
 Select * from employees Where JOb != 'Developer'
@@ -98,5 +99,174 @@ Select * from Employees Where Ename Like 'M%'
 Select * from Employees Where Ename Like '%a'
 
 #7 
-Select * from 
+Select Descr, DATEDIFF(month,Start_Date,Actual_End_Date) as Time_taken_in_months_for_Completion from Projects 
+Where Descr = 'Inventory' 
+
+#8
+Select Task From EmpProjectTasks Where Status = 'In Progress'
+
+#9 
+Select * From Departments Where Loc = 'Pune'
+
+#10
+Select Ename, Salary from Employees 
+Order by Salary Desc
+
+#11
+Select Task from EmpProjectTasks Order by End_Date
+
+#12 
+Select Distinct Job from Employees
+
+#13
+Select UPPER(Ename) from Employees 
+
+#14
+Select Ename, Salary, .25* Salary as Bonus From Employees
+
+#15
+Select CONCAT (Ename, ' works as a ',Job) as Occupation from Employees 
+
+#16
+Select DATEName(WeekDay,Start_Date) from Projects
+
+#17
+Select CHARINDEX('@',Email) from Clients
+
+#18
+Select LEFT(Cname, 3) from Clients
+
+#19
+Select FORMAT(Budget, 'c') from Projects
+
+#20
+Select Planned_End_date , DATEADD(m,3,Planned_End_Date) as Review_Date From Projects
+
+#21
+Select Count (Client_ID) as COUNT_OF_CLIENTS from Clients
+
+#22
+Select COUNT(Ename) as No_of_Employees, Sum(Salary) as Total_Salary from Employees
+
+#23
+Select Departments.Dname, Max(Employees.Salary) as Max_Salary
+From Employees Join Departments On Employees.Deptno = Departments.Deptno
+Group by Dname
+
+
+#24
+Select Job, Min(Salary) as Min_SALARY from Employees
+Group by Job
+
+#25
+Select Sum(Salary)/COUNT(Salary) as Average_Salary from Employees
+select AVG(salary) as Average_Slry from Employees
+
+#26
+Select SUM(Budget) from Projects
+
+#27
+Select Count(Task) from EmpProjectTasks
+Where Task = 'Coding'
+
+#28
+Select Departments.Dname, COUNT(Employees.Salary) as No_of_Employees,SUM(Employees.Salary) as Sum_Of_Salaries 
+From Departments Join Employees on Employees.Deptno=Departments.Deptno
+Group by Dname
+
+#29
+Select Clients.Cname, Projects.Descr,Projects.Start_Date,Projects.Budget
+From Clients Join Projects on Clients.Client_ID=Projects.Client_ID
+
+#30
+Select Departments.Deptno,Employees.Ename,Employees.JOb
+From Departments Join Employees on Employees.Deptno=Departments.Deptno
+
+#31 
+Select Employees.Ename, Projects.Descr as Project_Name, EmpProjectTasks.Task
+From (Employees Join EmpProjectTasks on Employees.Empno=EmpProjectTasks.Empno)
+Join Projects on Projects.Project_ID=EmpProjectTasks.Project_ID 
+Where Task = 'System Analysis'
+
+#32
+Select JOb,COUNT(JOb) from Employees
+Group by JOb
+
+#33
+Select Employees.Empno from Employees
+Employees Left Join EmpProjectTasks on Employees.Empno=EmpProjectTasks.Empno
+Except
+Select EmpProjectTasks.Empno from EmpProjectTasks
+Employees Right Join EmpProjectTasks on EmpProjectTasks.Empno = Employees.Empno
+
+#34
+Select Employees.Empno from Employees
+Employees Right Join EmpProjectTasks on Employees.Empno = EmpProjectTasks.Empno
+Union 
+Select EmpProjectTasks.Empno from EmpProjectTasks
+Employees Left Join EmpProjectTasks on Employees.Empno=EmpProjectTasks.Empno
+
+#35
+Select Employees.Empno from Employees
+Employees Right Join EmpProjectTasks on Employees.Empno = EmpProjectTasks.Empno
+Union all 
+Select EmpProjectTasks.Empno from EmpProjectTasks
+Employees Left Join EmpProjectTasks on Employees.Empno=EmpProjectTasks.Empno
+
+
+# Week 3
+
+#1
+Select Descr as Project_Name from Projects  
+Where Budget = (Select MAX(Budget) from Projects)
+
+#2
+Select Ename, JOb from Employees 
+Where JOb = (Select Job from Employees Where Ename ='Madhav')
+
+#3 
+Select Employees.Ename
+from Employees Join EmpProjectTasks on Employees.Empno= EmpProjectTasks.Empno
+Where Task = 'Code Change'
+
+#4
+Select Clients.Cname
+from (Clients Join Projects on Clients.Client_ID= Projects.Client_ID)
+Join EmpProjectTasks on EmpProjectTasks.Project_ID= Projects.Project_ID
+where (Task = 'Coding'AND Status = 'In Progress')
+
+#5
+Select Departments.Deptno,Departments.Dname,Employees.Ename,Employees.Salary
+From Employees join Departments on Employees.Deptno=Departments.Deptno
+Where Salary = ( Select MAX( Salary) from Employees where Deptno=Departments.Deptno)
+
+#6
+Select Departments.Dname as Department_Name, SUM (employees.salary) as Total_Salary
+From Employees join Departments on Employees.Deptno=Departments.Deptno
+Group by Departments.Dname
+Having SUM(Employees.salary) = (Select MAX(Total_Salary) from (select SUM(Salary) as Total_Salary from Employees Group by Deptno) Total_Salary)  
+
+#7
+with CLIENTS_PROJECTS As (Select Clients.Client_ID,Clients.Cname,Clients.Address,Clients.Business, Projects.Descr,Projects.Budget
+from Clients join Projects on Clients.Client_ID=Projects.Client_ID) 
+Select * from CLIENTS_PROJECTS
+
+#8 
+Update Employees 
+Set Salary= 1.25 * Salary 
+from Employees Inner join EmpProjectTasks on EmpProjectTasks.Empno=Employees.Empno
+Where EmpProjectTasks.Task = 'Testing'
+Select * from Employees 
+
+#9
+Create View Dept_EMP AS 
+Select Employees.Ename,Employees.Job,Employees.Salary,Departments.Deptno,Departments.Dname,Departments.Loc FROM Employees,Departments
+where Employees.Deptno=Departments.Deptno
+
+Select* from Dept_EMP
+
+#10
+Create Synonym EPT for EmpProjectTasks
+
+Select * from EPT
 
